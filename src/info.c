@@ -117,7 +117,7 @@ void info_frame_init(void)
 	max_channels = 0;
 }
 
-#define MSG_SIZE 80
+#define MSG_SIZE 90
 static int msg_timer = 0;
 static char msg_text[MSG_SIZE];
 
@@ -144,7 +144,7 @@ static void fix_info_02x(int val, char *buf)
 
 void info_frame(const struct xmp_module_info *mi, const struct xmp_frame_info *fi, struct control *ctl, int reprint)
 {
-	static int ord = -1, spd = -1, bpm = -1;
+	static int ord = -1, spd = -1, bpm = -1, gvol = -1;
 	char rowstr[3], numrowstr[3];
 	char chnstr[3], maxchnstr[3];
 	int time;
@@ -177,7 +177,7 @@ void info_frame(const struct xmp_module_info *mi, const struct xmp_frame_info *f
 	}
 
 	if (msg_timer > 0) {
-		report("\r%-61.61s %c%c%c", msg_text,
+		report("\r%-70.70s %c%c%c", msg_text,
 			ctl->explore ? 'Z' : ' ',
 			ctl->loop ? 'L' : ' ', x);
 		msg_timer -= fi->frame_time * fi->speed / 6;
@@ -193,15 +193,16 @@ void info_frame(const struct xmp_module_info *mi, const struct xmp_frame_info *f
 		msg_timer = 0;
 	}
 
-	if (reprint || fi->pos != ord || fi->bpm != bpm || fi->speed != spd) {
-		report("\rSpeed[%02X] BPM[%02X] Pos[%02X/%02X] "
+	if (reprint || fi->pos != ord || fi->bpm != bpm || fi->speed != spd || fi->volume != gvol) {
+		report("\rSpeed[%02X] BPM[%02X] GVol[%02X] Pos[%02X/%02X] "
 			 "Pat[%02X/%02X] Row[  /  ] Chn[  /  ]      0:00:00.0",
-					fi->speed, fi->bpm,
+					fi->speed, fi->bpm, fi->volume,
 					fi->pos, mi->mod->len - 1,
 					fi->pattern, mi->mod->pat - 1);
 		ord = fi->pos;
 		bpm = fi->bpm;
 		spd = fi->speed;
+		gvol = fi->volume;
 	}
 
 	fix_info_02x(fi->row, rowstr);

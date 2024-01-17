@@ -113,7 +113,7 @@ static void sigcont_handler(int sig)
 
 static void show_info(int what, const struct xmp_module_info *mi, int mode)
 {
-	report("\r%78.78s\n", " ");
+	report("\r%87.87s\n", " ");
 	switch (what) {
 	case '?':
 		info_help();
